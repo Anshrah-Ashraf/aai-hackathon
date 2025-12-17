@@ -1,0 +1,352 @@
+# Content API Contract for ROS2 Educational Module
+# This defines the interface for the educational content that could be consumed by other systems
+# such as the RAG chatbot system mentioned in the overall project constitution
+
+openapi: 3.0.0
+info:
+  title: ROS2 Educational Module Content API
+  description: API for accessing educational content about ROS2 as middleware connecting AI agents to humanoid robots
+  version: 1.0.0
+  contact:
+    name: ROS2 Educational Module Team
+    email: education@example.com
+
+servers:
+  - url: https://api.ros2-educational-module.com/v1
+    description: Production server
+  - url: https://staging-api.ros2-educational-module.com/v1
+    description: Staging server
+
+paths:
+  /modules/ros2-nervous-system:
+    get:
+      summary: Get information about the ROS2 Nervous System module
+      description: Retrieve metadata about the ROS2 educational module including chapters, learning objectives, and prerequisites
+      responses:
+        '200':
+          description: Module information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModuleInfo'
+        '404':
+          description: Module not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /modules/ros2-nervous-system/chapters:
+    get:
+      summary: Get all chapters in the ROS2 Nervous System module
+      description: Retrieve a list of all chapters in the module with their basic information
+      responses:
+        '200':
+          description: List of chapters retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chapters:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChapterInfo'
+        '404':
+          description: Module not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /modules/ros2-nervous-system/chapters/{chapterId}:
+    get:
+      summary: Get a specific chapter
+      description: Retrieve detailed information about a specific chapter
+      parameters:
+        - name: chapterId
+          in: path
+          required: true
+          description: ID of the chapter to retrieve
+          schema:
+            type: string
+            enum: [core-concepts, python-agents, urdf-description]
+      responses:
+        '200':
+          description: Chapter information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChapterDetail'
+        '404':
+          description: Chapter not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /modules/ros2-nervous-system/chapters/{chapterId}/sections:
+    get:
+      summary: Get sections within a chapter
+      description: Retrieve all sections within a specific chapter
+      parameters:
+        - name: chapterId
+          in: path
+          required: true
+          description: ID of the chapter
+          schema:
+            type: string
+            enum: [core-concepts, python-agents, urdf-description]
+      responses:
+        '200':
+          description: List of sections retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sections:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SectionInfo'
+        '404':
+          description: Chapter not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /modules/ros2-nervous-system/search:
+    get:
+      summary: Search educational content
+      description: Search across all content in the ROS2 educational module
+      parameters:
+        - name: query
+          in: query
+          required: true
+          description: Search query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of results to return
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Search results retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchResult'
+                  total:
+                    type: integer
+                    description: Total number of results available
+        '400':
+          description: Invalid search query
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ModuleInfo:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - learningObjectives
+        - prerequisites
+        - chapters
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the module
+          example: "ros2-nervous-system"
+        title:
+          type: string
+          description: Title of the module
+          example: "The Robotic Nervous System (ROS 2)"
+        description:
+          type: string
+          description: Brief description of the module
+          example: "Introduction to ROS 2 as middleware connecting AI agents to humanoid robots"
+        learningObjectives:
+          type: array
+          description: List of learning objectives for the module
+          items:
+            type: string
+        prerequisites:
+          type: array
+          description: Prerequisites for the module
+          items:
+            type: string
+        chapters:
+          type: array
+          description: List of chapters in the module
+          items:
+            $ref: '#/components/schemas/ChapterInfo'
+        duration:
+          type: integer
+          description: Estimated duration to complete the module in minutes
+          example: 180
+
+    ChapterInfo:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - sections
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the chapter
+          example: "core-concepts"
+        title:
+          type: string
+          description: Title of the chapter
+          example: "ROS 2 Core Concepts"
+        description:
+          type: string
+          description: Brief description of the chapter
+          example: "Introduction to fundamental ROS 2 concepts including nodes, topics, and services"
+        sections:
+          type: array
+          description: List of sections in the chapter
+          items:
+            $ref: '#/components/schemas/SectionInfo'
+        duration:
+          type: integer
+          description: Estimated duration to complete the chapter in minutes
+          example: 60
+
+    ChapterDetail:
+      allOf:
+        - $ref: '#/components/schemas/ChapterInfo'
+        - type: object
+          properties:
+            content:
+              type: string
+              description: Full content of the chapter in Markdown format
+            learningObjectives:
+              type: array
+              description: Specific learning objectives for this chapter
+              items:
+                type: string
+            exercises:
+              type: array
+              description: List of exercises in this chapter
+              items:
+                $ref: '#/components/schemas/Exercise'
+
+    SectionInfo:
+      type: object
+      required:
+        - id
+        - title
+        - contentSummary
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the section
+          example: "nodes-topics-services"
+        title:
+          type: string
+          description: Title of the section
+          example: "Nodes, Topics, Services"
+        contentSummary:
+          type: string
+          description: Brief summary of the section content
+          example: "Explanation of ROS 2 communication patterns"
+        duration:
+          type: integer
+          description: Estimated duration to complete the section in minutes
+          example: 15
+        dependencies:
+          type: array
+          description: IDs of sections that should be completed before this one
+          items:
+            type: string
+
+    Exercise:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - type
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the exercise
+          example: "exercise-1"
+        title:
+          type: string
+          description: Title of the exercise
+          example: "Create a Simple ROS 2 Node"
+        description:
+          type: string
+          description: Detailed description of the exercise
+          example: "Implement a basic ROS 2 node that publishes a message to a topic"
+        type:
+          type: string
+          description: Type of exercise
+          enum: [practical, theoretical, quiz]
+        difficulty:
+          type: string
+          description: Difficulty level of the exercise
+          enum: [beginner, intermediate, advanced]
+
+    SearchResult:
+      type: object
+      required:
+        - id
+        - title
+        - contentPreview
+        - type
+        - path
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the search result
+        title:
+          type: string
+          description: Title of the content item
+        contentPreview:
+          type: string
+          description: Preview of the content around the search term
+        type:
+          type: string
+          description: Type of content (chapter, section, etc.)
+          enum: [chapter, section, exercise]
+        path:
+          type: string
+          description: Path to access the content item
+        score:
+          type: number
+          description: Relevance score of the search result
+          format: float
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+          example: "NOT_FOUND"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "The requested resource was not found"

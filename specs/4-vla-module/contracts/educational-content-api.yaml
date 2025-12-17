@@ -1,0 +1,473 @@
+openapi: 3.0.0
+info:
+  title: Educational Content API for VLA Module
+  description: API for retrieving educational content about Vision-Language-Action systems
+  version: 1.0.0
+  contact:
+    name: VLA Module Team
+    email: education@vla-module.example.com
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: https://staging-api.example.com/v1
+    description: Staging server
+
+paths:
+  /educational-content/vla-systems:
+    get:
+      summary: Get VLA Systems educational content
+      description: Retrieve educational content covering Vision-Language-Action systems and their role in robotics
+      operationId: getVLASystemsContent
+      tags:
+        - educational-content
+      parameters:
+        - name: format
+          in: query
+          description: Response format preference
+          required: false
+          schema:
+            type: string
+            enum: [full, summary, assessment]
+            default: full
+      responses:
+        '200':
+          description: VLA Systems educational content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VLASystemsContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /educational-content/voice-to-action:
+    get:
+      summary: Get Voice-to-Action educational content
+      description: Retrieve educational content covering voice-to-action interfaces in robotics
+      operationId: getVoiceToActionContent
+      tags:
+        - educational-content
+      parameters:
+        - name: format
+          in: query
+          description: Response format preference
+          required: false
+          schema:
+            type: string
+            enum: [full, summary, assessment]
+            default: full
+      responses:
+        '200':
+          description: Voice-to-Action educational content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoiceToActionContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /educational-content/llm-planning:
+    get:
+      summary: Get LLM Planning educational content
+      description: Retrieve educational content covering LLM-based cognitive planning for robotics
+      operationId: getLLMPlanningContent
+      tags:
+        - educational-content
+      parameters:
+        - name: format
+          in: query
+          description: Response format preference
+          required: false
+          schema:
+            type: string
+            enum: [full, summary, assessment]
+            default: full
+      responses:
+        '200':
+          description: LLM Planning educational content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LLMPlanningContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /educational-content/search:
+    post:
+      summary: Search educational content
+      description: Search across all educational content for specific VLA topics
+      operationId: searchEducationalContent
+      tags:
+        - educational-content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        '200':
+          description: Search results containing relevant educational content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    VLASystemsContent:
+      type: object
+      required:
+        - id
+        - title
+        - content
+        - learning_objectives
+        - assessment_questions
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the VLA Systems content
+          example: "vla-systems-overview-001"
+        title:
+          type: string
+          description: Title of the VLA Systems content
+          example: "Vision-Language-Action Paradigm"
+        content:
+          type: object
+          properties:
+            overview:
+              type: string
+              description: Introduction to VLA systems and their components
+            perception_to_action_loops:
+              type: string
+              description: Explanation of perception-to-action loops
+            llm_role_in_robotics:
+              type: string
+              description: Role of LLMs in robotics applications
+            best_practices:
+              type: string
+              description: Recommended practices for VLA implementation
+            examples:
+              type: array
+              items:
+                type: string
+              description: Practical examples and use cases
+        learning_objectives:
+          type: array
+          items:
+            type: string
+          description: Specific learning objectives for this chapter
+          example:
+            - "Explain the components of Vision-Language-Action systems"
+            - "Describe perception-to-action loops in robotics"
+        assessment_questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssessmentQuestion'
+        prerequisites:
+          type: array
+          items:
+            type: string
+          description: Knowledge required before this chapter
+        cross_references:
+          type: array
+          items:
+            type: string
+          description: Links to related content in other chapters
+
+    VoiceToActionContent:
+      type: object
+      required:
+        - id
+        - title
+        - content
+        - learning_objectives
+        - assessment_questions
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the Voice-to-Action content
+          example: "voice-to-action-overview-001"
+        title:
+          type: string
+          description: Title of the Voice-to-Action content
+          example: "Voice-to-Action Interfaces"
+        content:
+          type: object
+          properties:
+            overview:
+              type: string
+              description: Introduction to voice-to-action systems
+            speech_to_text:
+              type: string
+              description: Explanation of speech-to-text conversion
+            intent_mapping:
+              type: string
+              description: Description of mapping voice commands to intents
+            ros2_action_triggering:
+              type: string
+              description: Explanation of triggering ROS 2 actions
+            best_practices:
+              type: string
+              description: Recommended practices for voice interfaces
+            examples:
+              type: array
+              items:
+                type: string
+              description: Practical examples and use cases
+        learning_objectives:
+          type: array
+          items:
+            type: string
+          description: Specific learning objectives for this chapter
+        assessment_questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssessmentQuestion'
+        prerequisites:
+          type: array
+          items:
+            type: string
+          description: Knowledge required before this chapter
+        cross_references:
+          type: array
+          items:
+            type: string
+          description: Links to related content in other chapters
+
+    LLMPlanningContent:
+      type: object
+      required:
+        - id
+        - title
+        - content
+        - learning_objectives
+        - assessment_questions
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the LLM Planning content
+          example: "llm-planning-overview-001"
+        title:
+          type: string
+          description: Title of the LLM Planning content
+          example: "LLM-Based Cognitive Planning"
+        content:
+          type: object
+          properties:
+            overview:
+              type: string
+              description: Introduction to LLM-based cognitive planning
+            natural_language_to_actions:
+              type: string
+              description: Explanation of translating natural language to action sequences
+            task_decomposition:
+              type: string
+              description: Coverage of high-level task decomposition
+            autonomous_behavior_preparation:
+              type: string
+              description: Preparing for autonomous humanoid behavior
+            best_practices:
+              type: string
+              description: Recommended practices for LLM planning
+            examples:
+              type: array
+              items:
+                type: string
+              description: Practical examples and use cases
+        learning_objectives:
+          type: array
+          items:
+            type: string
+          description: Specific learning objectives for this chapter
+        assessment_questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssessmentQuestion'
+        prerequisites:
+          type: array
+          items:
+            type: string
+          description: Knowledge required before this chapter
+        cross_references:
+          type: array
+          items:
+            type: string
+          description: Links to related content in other chapters
+
+    AssessmentQuestion:
+      type: object
+      required:
+        - id
+        - question
+        - options
+        - correct_answer
+        - explanation
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the question
+        question:
+          type: string
+          description: The question text
+        options:
+          type: array
+          items:
+            type: string
+          description: Multiple choice options
+        correct_answer:
+          type: string
+          description: The correct option
+        explanation:
+          type: string
+          description: Explanation of the correct answer
+
+    SearchRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: Search query text
+          example: "VLA systems"
+        filters:
+          type: object
+          properties:
+            content_type:
+              type: string
+              enum: [vla-systems, voice-to-action, llm-planning]
+              description: Filter by content type
+            difficulty:
+              type: string
+              enum: [beginner, intermediate, advanced]
+              description: Filter by difficulty level
+        limit:
+          type: integer
+          description: Maximum number of results to return
+          default: 10
+          maximum: 100
+
+    SearchResponse:
+      type: object
+      required:
+        - results
+        - total_count
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchResult'
+        total_count:
+          type: integer
+          description: Total number of matching results
+        query_time_ms:
+          type: integer
+          description: Time taken to execute the search in milliseconds
+
+    SearchResult:
+      type: object
+      required:
+        - id
+        - title
+        - content_type
+        - relevance_score
+        - snippet
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the content
+        title:
+          type: string
+          description: Title of the content
+        content_type:
+          type: string
+          enum: [vla-systems, voice-to-action, llm-planning]
+          description: Type of content
+        relevance_score:
+          type: number
+          description: Relevance score for the search result
+          minimum: 0
+          maximum: 1
+        snippet:
+          type: string
+          description: Snippet of content that matches the search
+
+    BadRequest:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Invalid request parameters"
+        code:
+          type: integer
+          example: 400
+
+    NotFound:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Not Found"
+        message:
+          type: string
+          example: "The requested resource was not found"
+        code:
+          type: integer
+          example: 404
+
+    InternalServerError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Internal Server Error"
+        message:
+          type: string
+          example: "An unexpected error occurred"
+        code:
+          type: integer
+          example: 500
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid parameters or payload
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequest'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFound'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InternalServerError'
+
+tags:
+  - name: educational-content
+    description: Endpoints for retrieving educational content about Vision-Language-Action systems
